@@ -14,11 +14,31 @@ pub struct Chunk {
 
 impl Chunk {
     pub fn new(chunk_type: ChunkType, data: Vec<u8>) -> Chunk {
+        let mut crc = u32::MAX;
+
+        chunk_type
+            .bytes()
+            .iter()
+            .chain(data.iter())
+            .for_each(|&byte| {
+                crc ^= u32::from(byte);
+                for _ in 0..8 {
+                    let bit = crc & 1;
+
+                    crc >>= 1;
+                    if bit == 1 {
+                        crc ^= 0xEDB88320;
+                    }
+                }
+            });
+
+        crc ^= u32::MAX;
+
         Self {
             length: data.len() as u32,
             chunk_type,
             data,
-            crc: 0,
+            crc,
         }
     }
 
@@ -67,9 +87,15 @@ impl TryFrom<&[u8]> for Chunk {
         std::io::Read::take(value.by_ref(), length as u64).read_to_end(&mut data)?;
 
         value.read_exact(&mut buffer)?;
-        //TODO: crc
+        let crc = u32::from_be_bytes(buffer);
+
         ensure!(value.is_empty(), "Input still contains values");
-        Ok(Chunk::new(chunk_type, data))
+
+        let chunk = Chunk::new(chunk_type, data);
+
+        ensure!(chunk.crc() == crc, "CRC failed to match");
+
+        Ok(chunk)
     }
 }
 
