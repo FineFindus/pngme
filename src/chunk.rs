@@ -63,7 +63,14 @@ impl Chunk {
     }
 
     pub fn as_bytes(&self) -> Vec<u8> {
-        self.data.clone()
+        self.length
+            .to_be_bytes()
+            .iter()
+            .chain(self.chunk_type.bytes().iter())
+            .chain(self.data.iter())
+            .chain(self.crc.to_be_bytes().iter())
+            .copied()
+            .collect()
     }
 }
 
