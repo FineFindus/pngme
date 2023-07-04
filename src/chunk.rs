@@ -96,8 +96,6 @@ impl TryFrom<&[u8]> for Chunk {
         value.read_exact(&mut buffer)?;
         let crc = u32::from_be_bytes(buffer);
 
-        ensure!(value.is_empty(), "Input still contains values");
-
         let chunk = Chunk::new(chunk_type, data);
 
         ensure!(chunk.crc() == crc, "CRC failed to match");
