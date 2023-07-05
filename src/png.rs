@@ -55,7 +55,14 @@ impl Png {
 
 impl Display for Png {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Png(chunks: {:?})", self.chunks)
+        write!(
+            f,
+            "Png(chunks: {:?})",
+            self.chunks
+                .iter()
+                .filter_map(|chunk| chunk.data_as_string().ok())
+                .collect::<Vec<String>>()
+        )
     }
 }
 

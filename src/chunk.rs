@@ -59,7 +59,7 @@ impl Chunk {
     }
 
     pub fn data_as_string(&self) -> Result<String> {
-        Ok(String::from_utf8(self.data.clone())?)
+        Ok(String::from_utf8_lossy(&self.data).to_string())
     }
 
     pub fn as_bytes(&self) -> Vec<u8> {
@@ -109,7 +109,10 @@ impl Display for Chunk {
         writeln!(
             f,
             "Chunk(type: {}, length: {}, crc: {}, data: {:?})",
-            self.chunk_type, self.length, self.crc, self.data
+            self.chunk_type,
+            self.length,
+            self.crc,
+            String::from_utf8_lossy(&self.data.to_vec())
         )
     }
 }
