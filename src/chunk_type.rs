@@ -14,7 +14,7 @@ impl ChunkType {
         self.bytes
     }
 
-    /// Checks wether the chunk is valid.
+    /// Checks whether the chunk is valid.
     ///
     /// A valid chunks only contains bytes in the ASCII range and the reserved bit is valid.
     pub fn is_valid(&self) -> bool {
@@ -25,15 +25,15 @@ impl ChunkType {
                 .all(|&byte| (byte as char).is_alphabetic())
     }
 
-    /// Indicates wether the chunk is `critical`/necessary
-    /// to succcessfully display the image.
+    /// Indicates whether the chunk is `critical`/necessary
+    /// to successfully display the image.
     ///
     /// Ancillary chunks may be ignored.
     pub fn is_critical(&self) -> bool {
         self.bytes[0] & 32 == 0
     }
 
-    /// Indicates wether the chunk is part of the PNGSpec
+    /// Indicates whether the chunk is part of the PNGSpec
     pub fn is_public(&self) -> bool {
         self.bytes[1] & 32 == 0
     }
@@ -44,7 +44,7 @@ impl ChunkType {
         self.bytes[2] & 32 == 0
     }
 
-    /// Indicates wheter the chunk is safe to copy. Unsafe chunks may not be copied when modifying
+    /// Indicates whether the chunk is safe to copy. Unsafe chunks may not be copied when modifying
     /// an image
     pub fn is_safe_to_copy(&self) -> bool {
         self.bytes[3] & 32 != 0

@@ -78,7 +78,7 @@ impl TryFrom<&[u8]> for Chunk {
     type Error = super::Error;
 
     fn try_from(value: &[u8]) -> std::result::Result<Self, Self::Error> {
-        ensure!(value.len() >= 12, "Input must have atleast 12 bytes");
+        ensure!(value.len() >= 12, "Input must have at least 12 bytes");
 
         let mut value = value;
         let mut buffer = [0; 4];
