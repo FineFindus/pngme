@@ -51,6 +51,24 @@ fn main() -> Result<()> {
             png.append_chunk(Chunk::new(chunk_type.clone(), message.as_bytes().to_vec()));
             write(output_file.as_ref().unwrap_or(file), &png)?;
         }
+        Some(Commands::Detect { file }) => {
+            let png = read_png(file)?;
+            png.chunks()
+                .iter()
+                .filter_map(|chunk| chunk.data_as_string().ok())
+                .filter(|data| {
+                    !data.trim().is_empty()
+                        && (data
+                            .trim()
+                            .chars()
+                            .filter(|char| char.is_ascii())
+                            .filter(|char| !(char.is_control() || char.is_whitespace()))
+                            .count() as f64
+                            / data.len() as f64)
+                            >= 0.8
+                })
+                .for_each(|data| println!("Potential message: {}", data))
+        }
         _ => {}
     }
 

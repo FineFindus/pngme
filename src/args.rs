@@ -32,4 +32,6 @@ pub enum Commands {
     },
     /// Print all chunks
     Print { file: PathBuf },
+    /// Try to detect potential messages
+    Detect { file: PathBuf },
 }
